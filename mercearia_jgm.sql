@@ -9,12 +9,12 @@ create table produtos
 idProd int primary key auto_increment,
 nomeProd varchar(30),
 idUn int,
-foreign key (idun) references unMedidas(idUn), 
 idCatProd int,
-foreign key (idCatProd) references categoriaProdutos(idCatProd),
 idForn int, 
-foreign key (idForn) references fornecedores(idForn),
 precoProd decimal(10,2),
+foreign key (idun) references unMedidas(idUn) on delete cascade on update cascade, 
+foreign key (idForn) references fornecedores(idForn) on delete cascade on update cascade,
+foreign key (idCatProd) references categoriaProdutos(idCatProd) on delete cascade on update cascade
 )
 
 create table categoriaProdutos
@@ -45,7 +45,7 @@ create table vendedores
 idVendedor int primary key auto_increment,
 nomeVendedor varchar (40),
 idDepartamento int,
-foreign key (idDepartamento) references departamentos(idDepartamento),
+foreign key (idDepartamento) references departamentos(idDepartamento) on delete cascade on update cascade
 )
 
 create table departamentos
@@ -66,21 +66,21 @@ create table vendas
 (
 idVenda int primary key auto_increment,
 idClient int,
-foreign key (idClient) references clientes(idClient),
 idVendedor int,
-foreign key (idVendedor) references vendedores(idVendedor),
 dataVenda datetime,
 valortotal decimal(10,2),
+foreign key (idClient) references clientes(idClient),
+foreign key (idVendedor) references vendedores(idVendedor) on delete cascade on update cascade
 )
 
 create table itensVendas
 (
 idItVenda int primary key auto_increment,
 idProd int,
-foreign key (idProd) references produtos(idProd),
 quantidade float,
 idVenda int,
-foreign key (idVenda) references vendas(idVenda),
+foreign key (idProd) references produtos(idProd) on delete cascade on update cascade,
+foreign key (idVenda) references vendas(idVenda) on delete cascade on update cascade
 )
 
 --========================Povoando tabelas========================

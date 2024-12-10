@@ -21,6 +21,12 @@ telFix varchar(30),
 telCel varchar(30)
 );
 
+create table categoriaProdutos
+(
+idCatProd int primary key auto_increment,
+nomeCat varchar(20)
+);
+
 create table produtos
 (
 idProd int primary key auto_increment,
@@ -32,12 +38,6 @@ precoProd decimal(10,2),
 foreign key (idun) references unMedidas(idUn) on delete cascade on update cascade, 
 foreign key (idForn) references fornecedores(idForn) on delete cascade on update cascade,
 foreign key (idCatProd) references categoriaProdutos(idCatProd) on delete cascade on update cascade
-);
-
-create table categoriaProdutos
-(
-idCatProd int primary key auto_increment,
-nomeCat varchar(20)
 );
 
 create table departamentos
@@ -99,7 +99,6 @@ values  ('frios'),
         ('grãos'),
         ('bombomniere');
 
-
 -- unidade de medidas
 insert into unMedidas (descricao, abreviatura)
 values  ('litros','L'),
@@ -124,7 +123,6 @@ values  ('Seara','000180377369273','rua pinheiro chagas 284','33312934',''),
         ('Frigorífico Boa Carne', '34567890123456', 'Estrada Velha 987', '222111333', '555666777'),
         ('Alimentos Saudáveis LTDA', '45678901234567', 'Rua das Palmeiras 654', '111333555', '888777666'),
         ('Lidiane Ovos','678903458762345','avenida pinheiro chagas 204','33314390','');
-
 
 -- departamentos
 insert into departamentos (nomeDep)
@@ -179,8 +177,6 @@ values ('refrigerante coca-cola', 4, 3, 3, 8.00),
        ('carne bovina', 3, 10, 4, 45.00),
        ('arroz 5kg', 4, 11, 5, 25.00);
 
-select * from produtos
-
 -- vendedores
 insert into vendedores (nomeVendedor, idDepartamento) 
 values ('marcela', 2),
@@ -218,11 +214,9 @@ values (1, 1, '2023-11-01', 180.00),
        (4, 2, '2024-10-04', 75.00),
        (5, 1, '2024-10-05', 125.00);
 
-select * from  vendas
-
 -- itens venda
-INSERT INTO itensVendas (idProd, quantidade, idVenda) 
-VALUES (1, 5, 11),
+insert into itensVendas (idProd, quantidade, idVenda) 
+values (1, 5, 11),
        (2, 2, 12),
        (3, 3, 13),
        (4, 4, 14),
@@ -269,3 +263,102 @@ VALUES (1, 5, 11),
        (1, 20, 2),
        (2, 6, 3),
        (5, 3, 4);
+
+--========================Adicionando Operações de Modificação========================
+
+--inserir salário
+alter table vendedores add salario decimal(10,2)
+
+update vendedores 
+set salario = 1420 where  idVendedor = 1 --1 salário
+update vendedores 
+set salario = 1420 where  idVendedor = 2 --1 salário 
+update vendedores 
+set salario = 1420 where  idVendedor = 3 --1 salário
+update vendedores 
+set salario = 2130 where  idVendedor = 4 --1,5x salário
+update vendedores 
+set salario = 4970 where  idVendedor = 5 --3,5x salário
+update vendedores 
+set salario = 4840 where  idVendedor = 6 --2x salário
+update vendedores 
+set salario = 3550 where  idVendedor = 7 --2,5 salário
+update vendedores 
+set salario = 4260 where  idVendedor = 8 --3x salário
+
+--inserir data de nascimento em clientes
+alter table clientes add dataNasc date
+
+update clientes 
+set dataNasc = '2004-11-22' where idClient = 1
+update clientes
+set dataNasc = '2002-05-03' where idClient = 2
+update clientes
+set dataNasc = '2003-08-20' where idClient = 3
+update clientes
+set dataNasc = '2005-01-05' where idClient = 4
+update clientes
+set dataNasc = '2003-05-07' where idClient = 5
+
+-- Excluir o produto de codigo 4
+delete from produtos where idProd = 4
+
+-- Excluir todos os produtos fornecidos pelo fornecedor de código 5
+delete from produtos where idForn = 5;
+
+-- Excluir o fornecedor de código 5
+delete from fornecedores where idForn = 5;
+
+-- Excluir todos os itens da venda de código 3
+delete from itensVendas where idVenda = 3;
+
+-- Excluir a venda de código 3
+delete from vendas where idVenda = 3;
+
+-- Excluir todas as vendas associadas ao cliente de código 2
+delete from vendas where idClient = 2;
+
+-- Excluir todos os itens das vendas associadas ao cliente de código 2
+delete from itensVendas where idVenda in (select idVenda from vendas where idClient = 2);
+
+-- Excluir o cliente de código 2
+delete from clientes where idClient = 2;
+
+-- Excluir todos os produtos associados a essa categoria
+delete from produtos where idCatProd = 4;
+
+-- Excluir a categoria de produtos
+delete from categoriaProdutos where idCatProd = 4;
+
+-- ordenar produtos em ordem alfabetica 
+select * from produtos order by nomeProd asc
+
+--Selecione todos os clientes cujo nome comece com a letra P 
+select *from clientes where nomeCliente like 'p%'
+
+--Mostre os códigos dos vendedores que fizeram vendas com valores acima de R$ 1000 
+select idVendedor from vendas where valortotal >1000
+
+--Mostre os nomes dos produtos cujos códigos forem 2, 5, 6 e 10
+select idProd,nomeProd as produtos from produtos where idProd in (2,5,6,10)
+
+--Mostre os vendedores de alfenas com salário maior que R$ 890,00
+alter table vendedores
+add cidade varchar (30)
+
+--Apagar a coluna cidade dos vendedores
+alter table vendedores
+drop column cidade
+
+update vendedores
+set cidade = 'alfenas'  where idVendedor = 1
+update vendedores
+set cidade ='paraguaçu' where idVendedor = 2
+update vendedores
+set cidade = 'alfenas' where idVendedor =3
+update vendedores
+set cidade = 'areado' where idVendedor =4
+update vendedores
+set cidade = 'alfenas' where idVendedor =5
+
+select * from vendedores where salario > 890 and cidade = 'alfenas';

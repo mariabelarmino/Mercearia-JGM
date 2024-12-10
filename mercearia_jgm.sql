@@ -362,3 +362,175 @@ update vendedores
 set cidade = 'alfenas' where idVendedor =5
 
 select * from vendedores where salario > 890 and cidade = 'alfenas';
+
+--========================Adicionando Operações de Consulta========================
+
+--consultas básicas e aninhadas
+
+SELECT * FROM clientes;
+
+SELECT * FROM produtos WHERE precoProd > 10;
+
+SELECT * FROM vendas WHERE idClient = 1;
+
+SELECT nomeProd FROM produtos WHERE idCatProd = 3;
+
+SELECT * FROM vendedores WHERE salario > 3000;
+
+--operações com strings
+
+SELECT CONCAT(nomeCliente, ' - ', tel) AS Cliente_Contato FROM clientes;
+
+SELECT * FROM clientes WHERE nomeCliente LIKE '%a%';
+
+SELECT * FROM vendedores WHERE nomeVendedor LIKE 'M%';
+
+SELECT * FROM produtos WHERE nomeProd LIKE '%coca%';
+
+SELECT * FROM fornecedores WHERE nomeForn LIKE '%a';
+
+--funções agregadas, agrupamento e cláusulas HAVING
+
+SELECT SUM(valortotal) AS Total_Vendas FROM vendas;
+
+SELECT idVendedor, COUNT(idVenda) AS Numero_Vendas FROM vendas GROUP BY idVendedor;
+
+SELECT AVG(precoProd) AS Media_Preco FROM produtos;
+
+SELECT COUNT(idClient) AS Total_Clientes FROM clientes;
+
+SELECT idVendedor, SUM(valortotal) AS Total_Vendas FROM vendas GROUP BY idVendedor;
+
+--ordenação
+
+SELECT nomeProd FROM produtos ORDER BY nomeProd ASC;
+
+SELECT nomeCliente FROM clientes ORDER BY nomeCliente DESC;
+
+SELECT nomeVendedor, salario FROM vendedores ORDER BY salario DESC;
+
+SELECT nomeProd, precoProd FROM produtos ORDER BY precoProd ASC;
+
+SELECT idVenda, valortotal FROM vendas ORDER BY valortotal DESC;
+
+--operações de conjuntos (união, interseção e diferença)
+
+SELECT nomeProd FROM produtos WHERE idCatProd = 1
+UNION
+SELECT nomeProd FROM produtos WHERE idCatProd = 2;
+
+SELECT nomeProd FROM produtos WHERE idCatProd = 1
+INTERSECT
+SELECT nomeProd FROM produtos WHERE idCatProd = 7;
+
+SELECT nomeProd FROM produtos WHERE idCatProd = 3
+EXCEPT
+SELECT nomeProd FROM produtos WHERE idCatProd = 1;
+
+SELECT nomeVendedor FROM vendedores WHERE idDepartamento = 1
+UNION
+SELECT nomeVendedor FROM vendedores WHERE idDepartamento = 2;
+
+--join
+
+-- Inner Join: Mostrar vendas com o nome do cliente e vendedor
+SELECT v.idVenda, c.nomeCliente, ve.nomeVendedor, v.valortotal
+FROM vendas v
+JOIN clientes c ON v.idClient = c.idClient
+JOIN vendedores ve ON v.idVendedor = ve.idVendedor;
+
+-- Left Join: Mostrar todos os clientes e suas vendas (inclusive clientes sem vendas)
+SELECT c.nomeCliente, v.idVenda, v.valortotal
+FROM clientes c
+LEFT JOIN vendas v ON c.idClient = v.idClient;
+
+-- Right Join: Mostrar todas as vendas e os produtos vendidos
+SELECT v.idVenda, p.nomeProd, iv.quantidade
+FROM vendas v
+RIGHT JOIN itensVendas iv ON v.idVenda = iv.idVenda
+JOIN produtos p ON iv.idProd = p.idProd;
+
+-- Join com múltiplas tabelas: Mostrar vendedores e as vendas realizadas
+SELECT ve.nomeVendedor, v.idVenda, v.valortotal
+FROM vendas v
+JOIN vendedores ve ON v.idVendedor = ve.idVendedor;
+
+-- Join para mostrar todos os produtos de uma venda
+SELECT p.nomeProd, iv.quantidade, iv.idVenda
+FROM itensVendas iv
+JOIN produtos p ON iv.idProd = p.idProd;
+
+--operações com multiconjuntos
+
+-- Seleciona produtos com preço maior que qualquer um dos produtos da categoria 2
+SELECT nomeProd, precoProd 
+FROM produtos 
+WHERE precoProd > ANY (SELECT precoProd FROM produtos WHERE idCatProd = 2);
+
+-- Seleciona produtos com preço menor que todos os produtos da categoria 3
+SELECT nomeProd, precoProd 
+FROM produtos 
+WHERE precoProd < ALL (SELECT precoProd FROM produtos WHERE idCatProd = 3);
+
+-- Seleciona vendas realizadas por qualquer vendedor do departamento 1
+SELECT * 
+FROM vendas 
+WHERE idVendedor = ANY (SELECT idVendedor FROM vendedores WHERE idDepartamento = 1);
+
+-- Seleciona clientes que realizaram mais vendas que todos os clientes do departamento 2
+SELECT idClient, COUNT(idVenda) AS TotalVendas
+FROM vendas
+GROUP BY idClient
+HAVING COUNT(idVenda) > ALL (SELECT COUNT(idVenda) 
+                             FROM vendas 
+                             WHERE idVendedor IN (SELECT idVendedor FROM vendedores WHERE idDepartamento = 2)
+                             GROUP BY idClient);
+
+-- Seleciona fornecedores que fornecem produtos mais baratos que qualquer produto da categoria 5
+SELECT nomeForn
+FROM fornecedores
+WHERE idForn = ANY (SELECT idForn FROM produtos WHERE precoProd < ANY (SELECT precoProd FROM produtos WHERE idCatProd = 5));
+
+--exists
+
+-- Seleciona clientes que realizaram pelo menos uma venda
+SELECT nomeCliente 
+FROM clientes c
+WHERE EXISTS (SELECT 1 FROM vendas v WHERE v.idClient = c.idClient);
+
+
+-- Seleciona produtos que foram vendidos pelo menos uma vez
+SELECT nomeProd 
+FROM produtos p
+WHERE EXISTS (SELECT 1 FROM itensVendas iv WHERE iv.idProd = p.idProd);
+
+
+-- Seleciona vendedores que já realizaram pelo menos uma venda
+SELECT nomeVendedor 
+FROM vendedores v
+WHERE EXISTS (
+    SELECT 1 
+    FROM vendas ve 
+    WHERE ve.idVendedor = v.idVendedor AND ve.valortotal > 100
+);
+
+-- Seleciona produtos que nunca foram vendidos
+SELECT nomeForn
+FROM fornecedores f
+WHERE EXISTS (
+    SELECT 1 
+    FROM produtos p
+    JOIN itensVendas iv ON p.idProd = iv.idProd
+    WHERE p.idForn = f.idForn
+);
+
+-- Seleciona categorias de produtos que possuem pelo menos um produto vendido
+SELECT nomeCliente 
+FROM clientes c
+WHERE EXISTS (
+    SELECT 1 
+    FROM vendas v
+    JOIN itensVendas iv ON v.idVenda = iv.idVenda
+    JOIN produtos p ON iv.idProd = p.idProd
+    WHERE v.idClient = c.idClient AND p.idCatProd = 7
+);

@@ -1,89 +1,93 @@
-create database empresa
+CREATE DATABASE empresa;
+SHOW DATABASES;
 
-use empresa
+USE empresa;
 
---========================Criando Tabelas========================
+-- ========================Criando Tabelas========================
 
 create table unMedidas
 (
-idUn int primary key auto_increment,
-descricao varchar(10),
-abreviatura varchar(5)
+    idUn int primary key auto_increment,
+    descricao varchar(10),
+    abreviatura varchar(5)
 );
 
 create table fornecedores
 (
-idForn int primary key auto_increment,
-nomeForn varchar(40),
-cnpj varchar (14),
-endFornecedor varchar(50),
-telFix varchar(30),
-telCel varchar(30)
+    idForn int primary key auto_increment,
+    nomeForn varchar(40),
+    cnpj varchar (14),
+    endFornecedor varchar(50),
+    telFix varchar(30),
+    telCel varchar(30)
 );
 
 create table categoriaProdutos
 (
-idCatProd int primary key auto_increment,
-nomeCat varchar(20)
+    idCatProd int primary key auto_increment,
+    nomeCat varchar(20)
 );
 
 create table produtos
 (
-idProd int primary key auto_increment,
-nomeProd varchar(30),
-idUn int,
-idCatProd int,
-idForn int, 
-precoProd decimal(10,2),
-foreign key (idun) references unMedidas(idUn) on delete cascade on update cascade, 
-foreign key (idForn) references fornecedores(idForn) on delete cascade on update cascade,
-foreign key (idCatProd) references categoriaProdutos(idCatProd) on delete cascade on update cascade
+    idProd int primary key auto_increment,
+    nomeProd varchar(30),
+    idUn int,
+    idCatProd int,
+    idForn int,
+    precoProd decimal(10,2),
+    foreign key (idun) references unMedidas(idUn) on delete cascade on update cascade,
+    foreign key (idForn) references fornecedores(idForn) on delete cascade on update cascade,
+    foreign key (idCatProd) references categoriaProdutos(idCatProd) on delete cascade on update cascade
 );
 
 create table departamentos
 (
-idDepartamento int primary key auto_increment,
-nomeDep varchar(50)
+    idDepartamento int primary key auto_increment,
+    nomeDep varchar(50)
 );
 
 create table vendedores
 (
-idVendedor int primary key auto_increment,
-nomeVendedor varchar (40),
-idDepartamento int,
-foreign key (idDepartamento) references departamentos(idDepartamento) on delete cascade on update cascade
+    idVendedor int primary key auto_increment,
+    nomeVendedor varchar (40),
+    idDepartamento int,
+    foreign key (idDepartamento) references departamentos(idDepartamento) on delete cascade on update cascade
 );
 
 create table clientes
 (
-idClient int primary key auto_increment,
-nomeCliente varchar (50),
-cpf varchar(11),
-tel varchar(20)
+    idClient int primary key auto_increment,
+    nomeCliente varchar (50),
+    cpf varchar(11),
+    tel varchar(20)
 );
 
 create table vendas
 (
-idVenda int primary key auto_increment,
-idClient int,
-idVendedor int,
-dataVenda date,
-valortotal decimal(10,2),
-foreign key (idClient) references clientes(idClient),
-foreign key (idVendedor) references vendedores(idVendedor) on delete cascade on update cascade
+    idVenda int primary key auto_increment,
+    idClient int,
+    idVendedor int,
+    dataVenda date,
+    valortotal decimal(10,2),
+    foreign key (idClient) references clientes(idClient),
+    foreign key (idVendedor) references vendedores(idVendedor) on delete cascade on update cascade
 );
 
 create table itensVendas
 (
-idItVenda int primary key auto_increment,
-idProd int,
-quantidade int,
-idVenda int,
-foreign key (idProd) references produtos(idProd) on delete cascade on update cascade,
-foreign key (idVenda) references vendas(idVenda) on delete cascade on update cascade
+    idItVenda int primary key auto_increment,
+    idProd int,
+    quantidade int,
+    idVenda int,
+    foreign key (idProd) references produtos(idProd) on delete cascade on update cascade,
+    foreign key (idVenda) references vendas(idVenda) on delete cascade on update cascade
 );
 
---========================Populando tabelas========================
+ALTER TABLE fornecedores MODIFY cnpj VARCHAR(18);
+
+
+-- ========================Populando tabelas========================
 
 -- categoria de produtos
 insert into categoriaProdutos (nomeCat)
@@ -111,7 +115,7 @@ values  ('litros','L'),
         ('unidade','UN');
 
 -- fornecedores
-insert into fornecedores (nomeForn, cnpj, endFornecedor, telFix, telCel) 
+insert into fornecedores (nomeForn, cnpj, endFornecedor, telFix, telCel)
 values  ('Seara','000180377369273','rua pinheiro chagas 284','33312934',''),
         ('Minuano','964376297407865','avenida joaquim barbosa 325','33328767',''),
         ('Ambeve','986754327658734','rua francisco vieira 3254','33329485',''),
@@ -136,7 +140,7 @@ values  ('caixa.1'),
         ('TI');
 
 -- clientes
-insert into clientes (nomeCliente, cpf, tel) 
+insert into clientes (nomeCliente, cpf, tel)
 values ('gabriela', '12312312312', '986532178'),
        ('roberto', '98798798765', '987654321'),
        ('carla', '11223344566', '992233445'),
@@ -154,7 +158,7 @@ values ('gabriela', '12312312312', '986532178'),
        ('eduardo', '33445566778', '984578392');
 
 -- produtos
-insert into produtos (nomeProd, idUn, idCatProd, idForn, precoProd) 
+insert into produtos (nomeProd, idUn, idCatProd, idForn, precoProd)
 values ('refrigerante coca-cola', 4, 3, 3, 8.00),
        ('presunto Sadia', 3, 1, 1, 22.50),
        ('arroz tipo 1', 4, 11, 5, 12.00),
@@ -178,7 +182,7 @@ values ('refrigerante coca-cola', 4, 3, 3, 8.00),
        ('arroz 5kg', 4, 11, 5, 25.00);
 
 -- vendedores
-insert into vendedores (nomeVendedor, idDepartamento) 
+insert into vendedores (nomeVendedor, idDepartamento)
 values ('marcela', 2),
        ('sabrina', 3),
        ('carlos', 1),
@@ -191,7 +195,7 @@ values ('marcela', 2),
        ('maria', 5);
 
 -- vendas
-insert into vendas (idClient, idVendedor, dataVenda, valortotal) 
+insert into vendas (idClient, idVendedor, dataVenda, valortotal)
 values (1, 1, '2023-11-01', 180.00),
        (2, 3, '2023-11-02', 220.00),
        (3, 2, '2023-11-03', 55.00),
@@ -215,7 +219,7 @@ values (1, 1, '2023-11-01', 180.00),
        (5, 1, '2024-10-05', 125.00);
 
 -- itens venda
-insert into itensVendas (idProd, quantidade, idVenda) 
+insert into itensVendas (idProd, quantidade, idVenda)
 values (1, 5, 11),
        (2, 2, 12),
        (3, 3, 13),
@@ -264,108 +268,120 @@ values (1, 5, 11),
        (2, 6, 3),
        (5, 3, 4);
 
---========================Adicionando Operações de Modificação========================
+-- ========================Adicionando Operações de Modificação========================
 
---inserir salário
-alter table vendedores add salario decimal(10,2)
+-- inserir salário
+ALTER TABLE vendedores ADD salario DECIMAL(10,2);
 
-update vendedores 
-set salario = 1420 where  idVendedor = 1 --1 salário
-update vendedores 
-set salario = 1420 where  idVendedor = 2 --1 salário 
-update vendedores 
-set salario = 1420 where  idVendedor = 3 --1 salário
-update vendedores 
-set salario = 2130 where  idVendedor = 4 --1,5x salário
-update vendedores 
-set salario = 4970 where  idVendedor = 5 --3,5x salário
-update vendedores 
-set salario = 4840 where  idVendedor = 6 --2x salário
-update vendedores 
-set salario = 3550 where  idVendedor = 7 --2,5 salário
-update vendedores 
-set salario = 4260 where  idVendedor = 8 --3x salário
+UPDATE vendedores
+SET salario = 1420 WHERE idVendedor = 1; -- 1 salário
 
---inserir data de nascimento em clientes
-alter table clientes add dataNasc date
+UPDATE vendedores
+SET salario = 1420 WHERE idVendedor = 2; -- 1 salário
 
-update clientes 
-set dataNasc = '2004-11-22' where idClient = 1
-update clientes
-set dataNasc = '2002-05-03' where idClient = 2
-update clientes
-set dataNasc = '2003-08-20' where idClient = 3
-update clientes
-set dataNasc = '2005-01-05' where idClient = 4
-update clientes
-set dataNasc = '2003-05-07' where idClient = 5
+UPDATE vendedores
+SET salario = 1420 WHERE idVendedor = 3; -- 1 salário
 
--- Excluir o produto de codigo 4
-delete from produtos where idProd = 4
+UPDATE vendedores
+SET salario = 2130 WHERE idVendedor = 4; -- 1,5x salário
+
+UPDATE vendedores
+SET salario = 4970 WHERE idVendedor = 5; -- 3,5x salário
+
+UPDATE vendedores
+SET salario = 4840 WHERE idVendedor = 6; -- 2x salário
+
+UPDATE vendedores
+SET salario = 3550 WHERE idVendedor = 7; -- 2,5x salário
+
+UPDATE vendedores
+SET salario = 4260 WHERE idVendedor = 8; -- 3x salário
+
+-- inserir data de nascimento em clientes
+ALTER TABLE clientes ADD dataNasc DATE;
+
+UPDATE clientes
+SET dataNasc = '2004-11-22' WHERE idClient = 1;
+
+UPDATE clientes
+SET dataNasc = '2002-05-03' WHERE idClient = 2;
+
+UPDATE clientes
+SET dataNasc = '2003-08-20' WHERE idClient = 3;
+
+UPDATE clientes
+SET dataNasc = '2005-01-05' WHERE idClient = 4;
+
+UPDATE clientes
+SET dataNasc = '2003-05-07' WHERE idClient = 5;
+
+-- Excluir o produto de código 4
+DELETE FROM produtos WHERE idProd = 4;
 
 -- Excluir todos os produtos fornecidos pelo fornecedor de código 5
-delete from produtos where idForn = 5;
+DELETE FROM produtos WHERE idForn = 5;
 
 -- Excluir o fornecedor de código 5
-delete from fornecedores where idForn = 5;
+DELETE FROM fornecedores WHERE idForn = 5;
 
 -- Excluir todos os itens da venda de código 3
-delete from itensVendas where idVenda = 3;
+DELETE FROM itensVendas WHERE idVenda = 3;
 
 -- Excluir a venda de código 3
-delete from vendas where idVenda = 3;
+DELETE FROM vendas WHERE idVenda = 3;
 
 -- Excluir todas as vendas associadas ao cliente de código 2
-delete from vendas where idClient = 2;
+DELETE FROM vendas WHERE idClient = 2;
 
 -- Excluir todos os itens das vendas associadas ao cliente de código 2
-delete from itensVendas where idVenda in (select idVenda from vendas where idClient = 2);
+DELETE FROM itensVendas WHERE idVenda IN (SELECT idVenda FROM vendas WHERE idClient = 2);
 
 -- Excluir o cliente de código 2
-delete from clientes where idClient = 2;
+DELETE FROM clientes WHERE idClient = 2;
 
 -- Excluir todos os produtos associados a essa categoria
-delete from produtos where idCatProd = 4;
+DELETE FROM produtos WHERE idCatProd = 4;
 
 -- Excluir a categoria de produtos
-delete from categoriaProdutos where idCatProd = 4;
+DELETE FROM categoriaProdutos WHERE idCatProd = 4;
 
--- ordenar produtos em ordem alfabetica 
-select * from produtos order by nomeProd asc
 
---Selecione todos os clientes cujo nome comece com a letra P 
-select *from clientes where nomeCliente like 'p%'
 
---Mostre os códigos dos vendedores que fizeram vendas com valores acima de R$ 1000 
-select idVendedor from vendas where valortotal >1000
+-- Ordenar produtos em ordem alfabética
+SELECT * FROM produtos ORDER BY nomeProd;
 
---Mostre os nomes dos produtos cujos códigos forem 2, 5, 6 e 10
-select idProd,nomeProd as produtos from produtos where idProd in (2,5,6,10)
 
---Mostre os vendedores de alfenas com salário maior que R$ 890,00
-alter table vendedores
-add cidade varchar (30)
+-- Selecione todos os clientes cujo nome comece com a letra P
+SELECT * FROM clientes WHERE nomeCliente LIKE 'P%';
 
---Apagar a coluna cidade dos vendedores
-alter table vendedores
-drop column cidade
+-- Mostre os códigos dos vendedores que fizeram vendas com valores acima de R$ 1000
+SELECT idVendedor FROM vendas WHERE valortotal > 1000;
 
-update vendedores
-set cidade = 'alfenas'  where idVendedor = 1
-update vendedores
-set cidade ='paraguaçu' where idVendedor = 2
-update vendedores
-set cidade = 'alfenas' where idVendedor =3
-update vendedores
-set cidade = 'areado' where idVendedor =4
-update vendedores
-set cidade = 'alfenas' where idVendedor =5
+-- Mostre os nomes dos produtos cujos códigos forem 2, 5, 6 e 10
+SELECT idProd, nomeProd AS produtos FROM produtos WHERE idProd IN (2, 5, 6, 10);
 
-select * from vendedores where salario > 890 and cidade = 'alfenas';
 
---========================Adicionando Operações de Consulta========================
+-- Adicionar coluna cidade em vendedores
+ALTER TABLE vendedores ADD cidade VARCHAR(30);
 
---consultas básicas e aninhadas
+-- Atualizar a cidade dos vendedores
+UPDATE vendedores SET cidade = 'alfenas' WHERE idVendedor = 1;
+UPDATE vendedores SET cidade = 'paraguaçu' WHERE idVendedor = 2;
+UPDATE vendedores SET cidade = 'alfenas' WHERE idVendedor = 3;
+UPDATE vendedores SET cidade = 'areado' WHERE idVendedor = 4;
+UPDATE vendedores SET cidade = 'alfenas' WHERE idVendedor = 5;
+
+-- Mostre os vendedores de Alfenas com salário maior que R$ 890,00
+SELECT * FROM vendedores WHERE salario > 890 AND cidade = 'alfenas';
+
+-- Apagar a coluna cidade dos vendedores
+ALTER TABLE vendedores DROP COLUMN cidade;
+
+
+
+-- ========================Adicionando Operações de Consulta========================
+
+-- consultas básicas e aninhadas
 
 SELECT * FROM clientes;
 
@@ -377,7 +393,7 @@ SELECT nomeProd FROM produtos WHERE idCatProd = 3;
 
 SELECT * FROM vendedores WHERE salario > 3000;
 
---operações com strings
+-- operações com strings
 
 SELECT CONCAT(nomeCliente, ' - ', tel) AS Cliente_Contato FROM clientes;
 
@@ -389,7 +405,7 @@ SELECT * FROM produtos WHERE nomeProd LIKE '%coca%';
 
 SELECT * FROM fornecedores WHERE nomeForn LIKE '%a';
 
---funções agregadas, agrupamento e cláusulas HAVING
+-- funções agregadas, agrupamento e cláusulas HAVING
 
 SELECT SUM(valortotal) AS Total_Vendas FROM vendas;
 
@@ -401,19 +417,19 @@ SELECT COUNT(idClient) AS Total_Clientes FROM clientes;
 
 SELECT idVendedor, SUM(valortotal) AS Total_Vendas FROM vendas GROUP BY idVendedor;
 
---ordenação
+-- ordenação
 
-SELECT nomeProd FROM produtos ORDER BY nomeProd ASC;
+SELECT nomeProd FROM produtos ORDER BY nomeProd;
 
 SELECT nomeCliente FROM clientes ORDER BY nomeCliente DESC;
 
 SELECT nomeVendedor, salario FROM vendedores ORDER BY salario DESC;
 
-SELECT nomeProd, precoProd FROM produtos ORDER BY precoProd ASC;
+SELECT nomeProd, precoProd FROM produtos ORDER BY precoProd;
 
 SELECT idVenda, valortotal FROM vendas ORDER BY valortotal DESC;
 
---operações de conjuntos (união, interseção e diferença)
+-- operações de conjuntos (união, interseção e diferença)
 
 SELECT nomeProd FROM produtos WHERE idCatProd = 1
 UNION
@@ -431,58 +447,58 @@ SELECT nomeVendedor FROM vendedores WHERE idDepartamento = 1
 UNION
 SELECT nomeVendedor FROM vendedores WHERE idDepartamento = 2;
 
---join
+-- join
 
 -- Inner Join: Mostrar vendas com o nome do cliente e vendedor
 SELECT v.idVenda, c.nomeCliente, ve.nomeVendedor, v.valortotal
 FROM vendas v
-JOIN clientes c ON v.idClient = c.idClient
-JOIN vendedores ve ON v.idVendedor = ve.idVendedor;
+         JOIN clientes c ON v.idClient = c.idClient
+         JOIN vendedores ve ON v.idVendedor = ve.idVendedor;
 
 -- Left Join: Mostrar todos os clientes e suas vendas (inclusive clientes sem vendas)
 SELECT c.nomeCliente, v.idVenda, v.valortotal
 FROM clientes c
-LEFT JOIN vendas v ON c.idClient = v.idClient;
+         LEFT JOIN vendas v ON c.idClient = v.idClient;
 
 -- Right Join: Mostrar todas as vendas e os produtos vendidos
 SELECT v.idVenda, p.nomeProd, iv.quantidade
 FROM vendas v
-RIGHT JOIN itensVendas iv ON v.idVenda = iv.idVenda
-JOIN produtos p ON iv.idProd = p.idProd;
+         RIGHT JOIN itensVendas iv ON v.idVenda = iv.idVenda
+         JOIN produtos p ON iv.idProd = p.idProd;
 
 -- Join com múltiplas tabelas: Mostrar vendedores e as vendas realizadas
 SELECT ve.nomeVendedor, v.idVenda, v.valortotal
 FROM vendas v
-JOIN vendedores ve ON v.idVendedor = ve.idVendedor;
+         JOIN vendedores ve ON v.idVendedor = ve.idVendedor;
 
 -- Join para mostrar todos os produtos de uma venda
 SELECT p.nomeProd, iv.quantidade, iv.idVenda
 FROM itensVendas iv
-JOIN produtos p ON iv.idProd = p.idProd;
+         JOIN produtos p ON iv.idProd = p.idProd;
 
---operações com multiconjuntos
+-- operações com multiconjuntos
 
 -- Seleciona produtos com preço maior que qualquer um dos produtos da categoria 2
-SELECT nomeProd, precoProd 
-FROM produtos 
+SELECT nomeProd, precoProd
+FROM produtos
 WHERE precoProd > ANY (SELECT precoProd FROM produtos WHERE idCatProd = 2);
 
 -- Seleciona produtos com preço menor que todos os produtos da categoria 3
-SELECT nomeProd, precoProd 
-FROM produtos 
+SELECT nomeProd, precoProd
+FROM produtos
 WHERE precoProd < ALL (SELECT precoProd FROM produtos WHERE idCatProd = 3);
 
 -- Seleciona vendas realizadas por qualquer vendedor do departamento 1
-SELECT * 
-FROM vendas 
+SELECT *
+FROM vendas
 WHERE idVendedor = ANY (SELECT idVendedor FROM vendedores WHERE idDepartamento = 1);
 
 -- Seleciona clientes que realizaram mais vendas que todos os clientes do departamento 2
 SELECT idClient, COUNT(idVenda) AS TotalVendas
 FROM vendas
 GROUP BY idClient
-HAVING COUNT(idVenda) > ALL (SELECT COUNT(idVenda) 
-                             FROM vendas 
+HAVING COUNT(idVenda) > ALL (SELECT COUNT(idVenda)
+                             FROM vendas
                              WHERE idVendedor IN (SELECT idVendedor FROM vendedores WHERE idDepartamento = 2)
                              GROUP BY idClient);
 
@@ -491,26 +507,26 @@ SELECT nomeForn
 FROM fornecedores
 WHERE idForn = ANY (SELECT idForn FROM produtos WHERE precoProd < ANY (SELECT precoProd FROM produtos WHERE idCatProd = 5));
 
---exists
+-- exists
 
 -- Seleciona clientes que realizaram pelo menos uma venda
-SELECT nomeCliente 
+SELECT nomeCliente
 FROM clientes c
 WHERE EXISTS (SELECT 1 FROM vendas v WHERE v.idClient = c.idClient);
 
 
 -- Seleciona produtos que foram vendidos pelo menos uma vez
-SELECT nomeProd 
+SELECT nomeProd
 FROM produtos p
 WHERE EXISTS (SELECT 1 FROM itensVendas iv WHERE iv.idProd = p.idProd);
 
 
 -- Seleciona vendedores que já realizaram pelo menos uma venda
-SELECT nomeVendedor 
+SELECT nomeVendedor
 FROM vendedores v
 WHERE EXISTS (
-    SELECT 1 
-    FROM vendas ve 
+    SELECT 1
+    FROM vendas ve
     WHERE ve.idVendedor = v.idVendedor AND ve.valortotal > 100
 );
 
@@ -518,19 +534,41 @@ WHERE EXISTS (
 SELECT nomeForn
 FROM fornecedores f
 WHERE EXISTS (
-    SELECT 1 
+    SELECT 1
     FROM produtos p
-    JOIN itensVendas iv ON p.idProd = iv.idProd
+             JOIN itensVendas iv ON p.idProd = iv.idProd
     WHERE p.idForn = f.idForn
 );
 
 -- Seleciona categorias de produtos que possuem pelo menos um produto vendido
-SELECT nomeCliente 
+SELECT nomeCliente
 FROM clientes c
 WHERE EXISTS (
-    SELECT 1 
+    SELECT 1
     FROM vendas v
-    JOIN itensVendas iv ON v.idVenda = iv.idVenda
-    JOIN produtos p ON iv.idProd = p.idProd
+             JOIN itensVendas iv ON v.idVenda = iv.idVenda
+             JOIN produtos p ON iv.idProd = p.idProd
     WHERE v.idClient = c.idClient AND p.idCatProd = 7
 );
+
+-- visualizando toda o banco
+SELECT  * FROM produtos;
+SELECT * FROM vendedores;
+SELECT * FROM clientes;
+SELECT * FROM vendas;
+SELECT * FROM departamentos;
+SELECT * FROM categoriaProdutos;
+SELECT * FROM fornecedores;
+SELECT * FROM unMedidas;
+SELECT * FROM itensVendas;
+
+SELECT COLUMN_NAME
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'produtos' AND COLUMN_NAME IN ('nome_prod', 'preco_prod', 'id_cat_prod', 'id_forn', 'id_un');
+
+SELECT COLUMN_NAME
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'produtos' AND COLUMN_NAME IN ('nome_prod', 'preco_prod', 'id_cat_prod', 'id_forn', 'id_un');
+
+
+describe produtos;
